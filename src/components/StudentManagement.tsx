@@ -179,7 +179,7 @@ const StudentManagement = () => {
                 <div className="overlay" hidden={!((action == "EDIT" || action == "ADD") && isOpen)}>
                     <form className="form" onSubmit={handleSubmitForm}>
                         <div className="d-flex justify-content-between align-items-center">
-                            <h4>Chỉnh sửa nhân viên</h4>
+                            <h4>{action==="ADD"?"Thêm mới":"Chỉnh Sửa"} nhân viên</h4>
                             <i className="fa-solid fa-xmark" onClick={handleCloseModal} />
                         </div>
                         <div>
@@ -203,7 +203,7 @@ const StudentManagement = () => {
                             <textarea className="form-control" name='address' value={selected.address} onChange={handleChangeInput} id="address" rows={3} defaultValue={""} />
                         </div>
                         <div>
-                            <button type='submit' className="w-100 btn btn-primary">Thêm mới</button>
+                            <button type='submit' className="w-100 btn btn-primary">{action=="ADD"?"Thêm mới":"Cập nhật"}</button>
                         </div>
                     </form>
                 </div>
