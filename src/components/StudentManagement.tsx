@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { data as initData } from './data'
 import React from 'react';
 
@@ -28,6 +28,20 @@ const StudentManagement = () => {
     const [action, setAction] = useState<Action>("") // thao tác của người dùng (block , delete, add, edit)
     const [isOpen, setIsOpen] = useState(false)
     const [selected, setSelected] = useState<Student>(initState) // dùng để lưu trữ đối tượng đang thao tác ()
+    const [size , setSize] = useState(1) // kích thước phần tử trên 1 trang
+    const [currentPage, setCurrentPage] = useState(2); // số trang hiện tai 
+
+
+    // ví dụ :
+    // TotalElements  = 101
+    // size = 10 
+    // pagecurrent = 3 
+    // totalPages =  Math.ceil(totalElements/size);
+
+    // index => 20 -> 29
+    // startIndex = (pagecurrent-1)size = pagecurrent*size - size
+    // endIndex = pagecurrent*size -1
+
 
     const handleOpenModal = (action: Action) => {
         setAction(action); // thay đổi hành động
@@ -93,6 +107,19 @@ const StudentManagement = () => {
         setAction("")
         setIsOpen(false)
     }
+
+    // tính tổng số trang 
+    const totalPages = useMemo(()=>{
+        return Math.ceil(data.length / size)
+    },[data,size])
+
+    // lọc các phần tử theo page và size 
+    const filterData = useMemo(()=>{
+        const start = (currentPage-1)*size
+        const end = currentPage*size;
+        // start <= index <end 
+        return data.slice(start,end)
+    },[data,currentPage,size])
     
 
     return (
@@ -123,7 +150,7 @@ const StudentManagement = () => {
                             </thead>
                             <tbody>
                                 {
-                                    data.map((student, index) => <tr key={index}>
+                                    filterData.map((student, index) => <tr key={index}>
                                         <td>{index + 1}</td>
                                         <td>{student.name}</td>
                                         <td>{student.dateOfbirth}</td>
@@ -157,20 +184,25 @@ const StudentManagement = () => {
                             </tbody>
                         </table>
                         <footer className="d-flex justify-content-end align-items-center gap-3">
-                            <select className="form-select" defaultValue={20}>
+                            <select className="form-select" value={size} onChange={(e)=>setSize(+e.target.value)}>
+                                <option value={2}>Hiển thị 2 bản ghi trên trang</option>
+                                <option value={5}>Hiển thị 5 bản ghi trên trang</option>
+                                <option value={8}>Hiển thị 8 bản ghi trên trang</option>
                                 <option value={10}>Hiển thị 10 bản ghi trên trang</option>
-                                <option value={20}>Hiển thị 20 bản ghi trên trang</option>
-                                <option value={50}>Hiển thị 50 bản ghi trên trang</option>
-                                <option value={100}>Hiển thị 100 bản ghi trên trang</option>
                             </select>
                             <ul className="pagination">
-                                <li className="page-item">
-                                    <a className="page-link" href="#">Previous</a>
+                                <li className={`page-item ${currentPage == 1 ? "disabled":""}`}>
+                                    <a className="page-link" href="#" onClick={()=>setCurrentPage(currentPage-1)}>Previous</a>
                                 </li>
-                                <li className="page-item"><a className="page-link" href="#">1</a></li>
-                                <li className="page-item"><a className="page-link" href="#">2</a></li>
-                                <li className="page-item"><a className="page-link" href="#">3</a></li>
-                                <li className="page-item"><a className="page-link" href="#">Next</a></li>
+                                {/*  đổ ra số trang tương ứng voviws số thẻ li */}
+                                {
+                                    Array.from(new Array(totalPages),(_, index)=>index+1).map((page,index)=>
+                                        <li className={`page-item ${currentPage == page?"active":""}`}><a onClick={()=>setCurrentPage(page)} className="page-link" href="#">{index+1}</a></li>
+                                    )
+                                }
+                                
+                               
+                                <li className={`page-item ${currentPage == totalPages ? "disabled":""}`}><a onClick={()=>setCurrentPage(currentPage+1)} className="page-link" href="#">Next</a></li>
                             </ul>
                         </footer>
                     </main>
