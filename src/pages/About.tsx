@@ -1,10 +1,20 @@
-import React from 'react'
+
+import AboutSection from '../components/AboutSection'
+import Navbar from '../components/Navbar'
+
 
 const About = () => {
   return (
-    <div>
-      <h1>Về chúng tôi</h1>
-    </div>
+    <>
+     <div className="header_section">
+                <div className="container">
+                    <Navbar />
+                </div>
+            </div>
+      {/* about section start */}
+      <AboutSection />
+      {/* about section end */}
+    </>
   )
 }
 
